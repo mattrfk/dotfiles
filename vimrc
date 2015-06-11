@@ -45,10 +45,6 @@ set wildmode=longest,list,full
 " always show status line
 set laststatus=2
 
-"persistant undo
-set undodir=~/.vim/undo 	" persistent undo storage
-set undofile           		" persistent undo on
-
 " Wrap lines at 80
 set textwidth=80
 "set wrapmargin=2
