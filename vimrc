@@ -45,9 +45,12 @@ set wildmode=longest,list,full
 " always show status line
 set laststatus=2
 
-" Wrap lines at 80
-set textwidth=80
-"set wrapmargin=2
+augroup foo
+	"clear autocommands in the group
+	autocmd! 
+	autocmd FileType text setlocal textwidth=80
+" autocmd BufRead, BufNewFile *.txt setlocal textwidth=80
+augroup END
 
 " indenting 
 set tabstop=2
