@@ -85,3 +85,7 @@ autocmd BufReadPost *
 
 " Disable detection of whitespace errors
 let g:airline#extensions#whitespace#enabled=0
+
+" insert date and time
+nnoremap <F5> "=strftime("%a, %d %b %Y %H:%M:%S %z")<CR>P
+inoremap <F5> <C-R>=strftime("%a, %d %b %Y %H:%M:%S %z")<CR>
