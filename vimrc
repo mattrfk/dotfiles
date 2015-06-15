@@ -19,6 +19,9 @@ call plug#begin()
 	Plug 'junegunn/goyo.vim', {'on': 'Goyo' }
 	" comment/uncomment 
 	Plug 'tpope/vim-commentary'
+
+	"emmet
+	Plug 'mattn/emmet-vim'
 call plug#end()
 
 imap jk <Esc>
@@ -50,6 +53,11 @@ augroup foo
 	autocmd! 
 	autocmd FileType text setlocal textwidth=80
 " autocmd BufRead, BufNewFile *.txt setlocal textwidth=80
+
+	" run current python file
+	autocmd FileType python nnoremap <buffer> <F9> :exec '!python' shellescape(@%, 1)<cr>
+
+
 augroup END
 
 " indenting 
