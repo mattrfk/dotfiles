@@ -19,10 +19,12 @@ call plug#begin()
 	Plug 'junegunn/goyo.vim', {'on': 'Goyo' }
 	" comment/uncomment 
 	Plug 'tpope/vim-commentary'
-
 	"emmet
 	Plug 'mattn/emmet-vim'
+	"auto save
+	Plug 'vim-scripts/vim-auto-save'
 call plug#end()
+
 
 imap jk <Esc>
 
@@ -56,9 +58,13 @@ augroup foo
 
 	" run current python file
 	autocmd FileType python nnoremap <buffer> <F9> :exec '!python' shellescape(@%, 1)<cr>
-
-
+	autocmd InsertLeave <buffer> w
 augroup END
+
+" enable auto-save plugin - manually enable with :AutoSaveToggle
+"let g:auto_save = 1
+let g:auto_save_silent = 1
+"let g:auto_save_in_insert_mode = 0
 
 " indenting 
 set tabstop=2
