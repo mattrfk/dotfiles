@@ -21,8 +21,8 @@ call plug#begin()
 	Plug 'tpope/vim-commentary'
 	"emmet
 	Plug 'mattn/emmet-vim'
-	"auto save
-	Plug 'vim-scripts/vim-auto-save'
+	"auto save - my fork
+	Plug 'mattrfk/vim-auto-save'
 call plug#end()
 
 
