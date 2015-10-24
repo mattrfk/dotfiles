@@ -53,8 +53,8 @@ set laststatus=2
 augroup foo
 	"clear autocommands in the group
 	autocmd! 
-	autocmd FileType text setlocal textwidth=80
-" autocmd BufRead, BufNewFile *.txt setlocal textwidth=80
+	" autocmd FileType text setlocal textwidth=80 " Hard wrap
+	" autocmd BufRead, BufNewFile *.txt setlocal textwidth=80
 
 	" run current python file
 	autocmd FileType python nnoremap <buffer> <F9> :exec '!python' shellescape(@%, 1)<cr>
