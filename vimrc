@@ -13,20 +13,30 @@ endif
 call plug#begin()
 	" status line
 	Plug 'bling/vim-airline'
+
 	" colors
 	Plug 'tomasr/molokai'
+
 	" focus mode - on demand load with first :Goyo command
 	Plug 'junegunn/goyo.vim', {'on': 'Goyo' }
+
 	" comment/uncomment 
 	Plug 'tpope/vim-commentary'
+
 	"emmet
 	Plug 'mattn/emmet-vim'
+
 	"auto save - my fork
 	Plug 'mattrfk/vim-auto-save'
+
+	Plug 'reedes/vim-pencil'
 call plug#end()
 
-
 imap jk <Esc>
+set linebreak
+set breakindent " keep wrapped lines tabbed
+
+set timeoutlen=100
 
 " use builtin colors before plugins are installed
 if !empty(glob('~/.vim/plugged/molokai'))
@@ -53,7 +63,8 @@ set laststatus=2
 augroup foo
 	"clear autocommands in the group
 	autocmd! 
-	" autocmd FileType text setlocal textwidth=80 " Hard wrap
+	" autocmd FileType text Goyo
+	" autocmd FileType text set foldcolumn=10
 	" autocmd BufRead, BufNewFile *.txt setlocal textwidth=80
 
 	" run current python file
