@@ -60,11 +60,6 @@ set laststatus=2
 let g:pencil#wrapModeDefault = 'soft'   " default is 'hard'
 autocmd FileType text call pencil#init()
 
-" autocmd FileType python 
-
-" highlight Foo ctermfg=blue
-" match Foo /.*\n---*/
-
 " indenting 
 set tabstop=2
 set shiftwidth=2
@@ -98,14 +93,14 @@ autocmd BufReadPost *
 " Disable detection of whitespace errors
 let g:airline#extensions#whitespace#enabled=0
 
+
+" underline current line
+nmap <F8> yypVr-
+inoremap <F8> <Esc>yypVr-
+
 " insert date and time
-inoremap <F5> <C-R>=strftime("%a, %d %b %Y %H:%M:%S %z")<CR>
+nnoremap <F9> "=strftime("%a, %d %b %Y %H:%M:%S %z")<CR>PyypVr-
+inoremap <F9> <C-R>=strftime("%a, %d %b %Y %H:%M:%S %z")<CR>
 
-nmap <F1> o<Esc>
-
-nmap <F2> yypVr-
-inoremap <F2> <Esc>yypVr
-
-nnoremap <F5> "=strftime("%a, %d %b %Y %H:%M:%S %z")<CR>PyypVr-
-
-nmap <F12> o<Esc><CR>"*P
+"paste
+nmap <F10> o<Esc><CR>"*P

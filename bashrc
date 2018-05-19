@@ -14,13 +14,11 @@ export HISTTIMEFORMAT="%d/%m/%y %T "
 export PS1="\u\$ "
 
 function note {
+	echo $(date) >> ~/Dropbox/words/notes.txt	
 	if [ -z "$1" ]; then
 		vim ~/Dropbox/words/notes.txt
 	else
-		if [ "$$" -ne 1 ]; then
-			echo "!!!! WARNING (you dropped something) !!!!"
-		fi
-		echo $1 >> ~/Dropbox/words/notes.txt	
+		echo $@ >> ~/Dropbox/words/notes.txt	
 	fi
 }
 
