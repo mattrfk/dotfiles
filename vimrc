@@ -1,8 +1,10 @@
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"""""""""""""""""""""""""""""""""""""
 " vim-plug + auto install
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"""""""""""""""""""""""""""""""
 filetype plugin indent on
+set cm=blowfish2
 
+" this loads junegunn's package manager in a fresh vim
 if empty(glob('~/.vim/autoload/plug.vim'))
   silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
     \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
@@ -13,34 +15,29 @@ endif
 call plug#begin()
 	" status line
 	Plug 'bling/vim-airline'
-
 	" colors
+	Plug 'junegunn/seoul256.vim'
 	Plug 'tomasr/molokai'
-
 	" focus mode - on demand load with first :Goyo command
 	Plug 'junegunn/goyo.vim', {'on': 'Goyo' }
-
-	" comment/uncomment 
-	Plug 'tpope/vim-commentary'
-
-	"emmet
-	Plug 'mattn/emmet-vim'
-
 	"auto save - my fork
-	Plug 'mattrfk/vim-auto-save'
-
+	"Plug 'mattrfk/vim-auto-save'
+	" for prose
 	Plug 'reedes/vim-pencil'
+	" File browser
+	Plug 'scrooloose/nerdtree'
+
+	"git wrapper
+	Plug 'tpope/vim-fugitive'
 call plug#end()
 
-imap jk <Esc>
+"softwrap
 set linebreak
-set breakindent " keep wrapped lines tabbed
-
-set timeoutlen=100
 
 " use builtin colors before plugins are installed
 if !empty(glob('~/.vim/plugged/molokai'))
-	colorscheme molokai
+	let g:seoul256_background = 235
+	colorscheme seoul256
 else
 	colorscheme elflord
 endif
@@ -60,32 +57,22 @@ set wildmode=longest,list,full
 " always show status line
 set laststatus=2
 
-augroup foo
-	"clear autocommands in the group
-	autocmd! 
-	" autocmd FileType text Goyo
-	" autocmd FileType text set foldcolumn=10
-	" autocmd BufRead, BufNewFile *.txt setlocal textwidth=80
+let g:pencil#wrapModeDefault = 'soft'   " default is 'hard'
+autocmd FileType text call pencil#init()
 
-	" run current python file
-	autocmd FileType python nnoremap <buffer> <F9> :exec '!python' shellescape(@%, 1)<cr>
-	autocmd InsertLeave <buffer> w
-augroup END
+" autocmd FileType python 
 
-" enable auto-save plugin - manually enable with :AutoSaveToggle
-"let g:auto_save = 1
-let g:auto_save_silent = 1
-"let g:auto_save_in_insert_mode = 0
+" highlight Foo ctermfg=blue
+" match Foo /.*\n---*/
 
 " indenting 
 set tabstop=2
 set shiftwidth=2
 set autoindent
 
-
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"""""""""""""""""""""""""""""""""""""""
 " Searching
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"""""""""""""""""""""""""""""""""""""""""""
 set hlsearch		"highlight search results
 set incsearch		"search as charaters are typed
 set ignorecase smartcase "Case sensitive only if there are uppers
@@ -112,5 +99,13 @@ autocmd BufReadPost *
 let g:airline#extensions#whitespace#enabled=0
 
 " insert date and time
-nnoremap <F5> "=strftime("%a, %d %b %Y %H:%M:%S %z")<CR>P
 inoremap <F5> <C-R>=strftime("%a, %d %b %Y %H:%M:%S %z")<CR>
+
+nmap <F1> o<Esc>
+
+nmap <F2> yypVr-
+inoremap <F2> <Esc>yypVr
+
+nnoremap <F5> "=strftime("%a, %d %b %Y %H:%M:%S %z")<CR>PyypVr-
+
+nmap <F12> o<Esc><CR>"*P

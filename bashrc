@@ -1,17 +1,42 @@
 alias ls='ls -G'
-alias ll='ls -lh'
+alias ll='ls -oph' # o:long w/o groupID; p:/ for dir; h:sizes for human
 alias cls='clear; ls'
-#export LSCOLORS="ExGxBxDxCxEgEdxbxgxcxd"
+alias clls='clear; ll'
+
+alias words='cd ~/Dropbox/words'
+alias code='cd ~/Documents/code'
+
 export LSCOLORS="gxBxhxDxfxhxhxhxhxcxcx"
 export GREP_OPTIONS="--color"
 
-alias code='cd ~/code'
-alias words='cd ~/Dropbox/words'
+export HISTTIMEFORMAT="%d/%m/%y %T "
 
-#git
-alias gitls='git ls-tree -r --name-only $1'
+export PS1="\u\$ "
 
-alias activate='source ./bin/activate'
+function note {
+	if [ -z "$1" ]; then
+		vim ~/Dropbox/words/notes.txt
+	else
+		if [ "$$" -ne 1 ]; then
+			echo "!!!! WARNING (you dropped something) !!!!"
+		fi
+		echo $1 >> ~/Dropbox/words/notes.txt	
+	fi
+}
+
+# append system clipboard to file, then open it in vim
+function vimc {
+	if [ -z "$1" ]; then
+		echo "you need to specify a filename"
+	else
+		if [ -s $1 ]; then
+			echo "not empty"
+			printf "\n\n" >> $1
+		fi
+		pbpaste >> $1		
+		vim $1
+	fi
+}
 
 function serve {
 	ip=$(ifconfig en0 | grep inet | grep -v inet6 | awk '{print $2}')
