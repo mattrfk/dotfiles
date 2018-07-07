@@ -93,6 +93,14 @@ autocmd BufReadPost *
 " Disable detection of whitespace errors
 let g:airline#extensions#whitespace#enabled=0
 
+" A	displays the mode + additional flags
+" B	VCS information (branch, hunk summary) (master)
+" C	filename + read-only flag (~/.vim/vimrc RO)
+" X	filetype (vim)
+" Y	file encoding[fileformat] (utf-8[unix])
+" Z	current position in the file
+let g:airline_section_b = ""
+let g:airline_section_y = ""
 
 " underline current line
 nmap <F8> yypVr-
@@ -104,3 +112,22 @@ inoremap <F9> <C-R>=strftime("%a, %d %b %Y %H:%M:%S %z")<CR>
 
 "paste
 nmap <F10> o<Esc><CR>"*P
+
+" Set the title of the Terminal to the currently open file
+function! SetTerminalTitle()
+    let titleString = expand('%:t')
+    if len(titleString) > 0
+        let &titlestring = expand('%:t')
+        " this is the format iTerm2 expects when setting the window title
+        let args = "\033];".&titlestring."\007"
+        let cmd = 'silent !echo -e "'.args.'"'
+        execute cmd
+        redraw!
+    endif
+endfunction
+
+autocmd BufEnter * call SetTerminalTitle()
+
+" in normal mode, hit enter and run the file
+autocmd BufNewFile,BufRead *.rb map <cr> :w\|:!clear; ./%<cr>
+autocmd BufNewFile,BufRead *.js map <cr> :w\|:!clear;./%<cr>

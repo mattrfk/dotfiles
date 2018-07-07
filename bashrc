@@ -14,7 +14,7 @@ export HISTTIMEFORMAT="%d/%m/%y %T "
 export PS1="\u\$ "
 
 function note {
-	echo $(date) >> ~/Dropbox/words/notes.txt	
+	echo \#$(date) >> ~/Dropbox/words/notes.txt	
 	if [ -z "$1" ]; then
 		vim ~/Dropbox/words/notes.txt
 	else
