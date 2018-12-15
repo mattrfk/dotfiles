@@ -2,21 +2,17 @@
 " vim-plug + auto install
 """""""""""""""""""""""""""""""
 filetype plugin indent on
-set cm=blowfish2
 
-" this loads junegunn's package manager in a fresh vim
 if empty(glob('~/.vim/autoload/plug.vim'))
   silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
     \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-  autocmd VimEnter * PlugInstall
-	so ~/.vimrc
+  autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
 endif
 
 call plug#begin()
 	" status line
 	Plug 'bling/vim-airline'
 	" colors
-	Plug 'junegunn/seoul256.vim'
 	Plug 'tomasr/molokai'
 	" focus mode - on demand load with first :Goyo command
 	Plug 'junegunn/goyo.vim', {'on': 'Goyo' }
@@ -27,17 +23,23 @@ call plug#begin()
 	" File browser
 	Plug 'scrooloose/nerdtree'
 
+	" vim autocomplete
+	Plug 'davidhalter/jedi-vim'
+
 	"git wrapper
 	Plug 'tpope/vim-fugitive'
+
 call plug#end()
+
+" set encryption method
+set cm=blowfish2 
 
 "softwrap
 set linebreak
 
 " use builtin colors before plugins are installed
 if !empty(glob('~/.vim/plugged/molokai'))
-	let g:seoul256_background = 235
-	colorscheme seoul256
+	colorscheme molokai
 else
 	colorscheme elflord
 endif
@@ -102,15 +104,11 @@ let g:airline#extensions#whitespace#enabled=0
 let g:airline_section_b = ""
 let g:airline_section_y = ""
 
-" underline current line
-nmap <F8> yypVr-
-inoremap <F8> <Esc>yypVr-
-
-" insert date and time
-nnoremap <F9> "=strftime("%a, %d %b %Y %H:%M:%S %z")<CR>PyypVr-
+" insert date and time and underline it
+nnoremap <F9> o<Esc>i=strftime("%a, %d %b %Y %H:%M:%S %z")<CR>yypVr-
 inoremap <F9> <C-R>=strftime("%a, %d %b %Y %H:%M:%S %z")<CR>
 
-"paste
+"paste from system clipboard
 nmap <F10> o<Esc><CR>"*P
 
 " Set the title of the Terminal to the currently open file
@@ -125,9 +123,15 @@ function! SetTerminalTitle()
         redraw!
     endif
 endfunction
-
 autocmd BufEnter * call SetTerminalTitle()
 
 " in normal mode, hit enter and run the file
 autocmd BufNewFile,BufRead *.rb map <cr> :w\|:!clear; ./%<cr>
-autocmd BufNewFile,BufRead *.js map <cr> :w\|:!clear;./%<cr>
+"autocmd BufNewFile,BufRead *.js map <cr> :w\|:!clear;./%<cr>
+
+autocmd BufNewFile,Bufread *c,*.rb,*.py,*.js,*.html,*.css set number
+
+" disable scrollbars in macvim
+set guioptions=
+
+let g:jedi#force_py_version = 3

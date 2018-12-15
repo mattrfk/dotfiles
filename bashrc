@@ -3,8 +3,13 @@ alias ll='ls -oph' # o:long w/o groupID; p:/ for dir; h:sizes for human
 alias cls='clear; ls'
 alias clls='clear; ll'
 
+alias v='vim'
+
 alias words='cd ~/Dropbox/words'
 alias code='cd ~/Documents/code'
+alias x='cd ~/Dropbox/words/x'
+
+alias anagram='~/dotfiles/util/unscrablme'
 
 export LSCOLORS="gxBxhxDxfxhxhxhxhxcxcx"
 export GREP_OPTIONS="--color"
@@ -13,12 +18,19 @@ export HISTTIMEFORMAT="%d/%m/%y %T "
 
 export PS1="\u\$ "
 
+function webstub {
+	cp ~/dotfiles/webstub/* ./
+}
+
 function note {
-	echo \#$(date) >> ~/Dropbox/words/notes.txt	
+	f=~/Dropbox/words/notes.txt
+
 	if [ -z "$1" ]; then
-		vim ~/Dropbox/words/notes.txt
+		vim $f
 	else
-		echo $@ >> ~/Dropbox/words/notes.txt	
+		echo \#$(date) >> $f
+		echo $@ >> $f
+		echo "" >> $f
 	fi
 }
 
@@ -34,6 +46,11 @@ function vimc {
 		pbpaste >> $1		
 		vim $1
 	fi
+}
+
+function ip {
+	ip=$(ifconfig en0 | grep inet | grep -v inet6 | awk '{print $2}')
+	echo "$ip"
 }
 
 function serve {
