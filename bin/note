@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+# for making notes
+
+f=~/Dropbox/words/notes.txt
+
+if [ -z "$1" ]; then
+	vim $f
+else
+	echo \#$(date) >> $f
+	echo $@ >> $f
+	echo "" >> $f
+fi

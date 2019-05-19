@@ -1,0 +1,78 @@
+#!/usr/bin/env python3
+
+import os
+from sys import argv
+from subprocess import call
+
+def addPicture(picpath, mp3path):
+    tmp = mp3path + ".mp3"
+
+    r = call(["ffmpeg", 
+        "-y", # force overwrite
+        "-i", mp3path,
+        "-i", picpath, # the picture
+        "-map", "0:0",
+        "-map", "1:0",
+        "-c", "copy",
+        "-id3v2_version", "3",
+        "-metadata:s:v", 'title="Album cover"',
+        "-metadata:s:v", 'comment="Cover (front)"',
+         tmp])
+
+    if r != 0: 
+        print("something didn't work")
+        return
+
+    os.remove(mp3path)
+    os.rename(tmp, mp3path)
+
+def ispic(f):
+    return f.lower().endswith((".jpg", ".jpeg", ".png"))
+
+def ismp3(f):
+    return f.lower().endswith(".mp3")
+
+def files(p):
+    return filter(os.path.isfile, os.listdir(p))
+
+
+picpath = ""
+mp3paths = []
+
+# no args, use first picture that I find
+if len(argv) == 1:
+    for f in files('.'):
+        if ispic(f) and not picpath:
+            picpath = f
+
+# first argument is picture or request for information
+if len(argv) > 1:
+    if "-h" in argv[1]:
+        print("usage: albumtomp3 albumart [mp3s..]")
+        exit()
+    else:
+        picpath = argv[1]
+
+# args beyond 1st are paths to mp3s
+# if no more args then search dir for all mp3s
+if len(argv) > 2:
+    mp3paths = argv[2:]
+else:
+    for f in files('.'):
+        if ismp3(f):
+            mp3paths.append(f)
+
+if not ispic(picpath):
+    print(picpath, "doesn't look like a good picture")
+    exit()
+
+[ print(path) for path in mp3paths ]
+print("I will add the picture", picpath)
+print("to %d files" % len(mp3paths))
+ans = input("continue? [y/n]") 
+
+if "y" !=  ans.lower():
+    print("OK bye.")
+    exit()
+
+[addPicture(picpath, path) for path in mp3paths]

@@ -1,8 +1,5 @@
-"""""""""""""""""""""""""""""""""""""
-" vim-plug + auto install
-"""""""""""""""""""""""""""""""
+" vim-plug auto install
 filetype plugin indent on
-
 if empty(glob('~/.vim/autoload/plug.vim'))
   silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
     \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
@@ -12,27 +9,28 @@ endif
 call plug#begin()
 	" status line
 	Plug 'bling/vim-airline'
+
 	" colors
 	Plug 'tomasr/molokai'
-	" focus mode - on demand load with first :Goyo command
-	Plug 'junegunn/goyo.vim', {'on': 'Goyo' }
-	"auto save - my fork
-	"Plug 'mattrfk/vim-auto-save'
+
 	" for prose
 	Plug 'reedes/vim-pencil'
-	" File browser
-	Plug 'scrooloose/nerdtree'
 
-	" vim autocomplete
+	" focus mode
+	Plug 'junegunn/goyo.vim', {'on': 'Goyo' }
+
+	" for python
 	Plug 'davidhalter/jedi-vim'
 
-	"git wrapper
-	Plug 'tpope/vim-fugitive'
+	Plug 'scrooloose/nerdcommenter'
+
+	" extra commands (Rename, Chmod, Delete, etc)
+	Plug 'tpope/vim-eunuch'
 
 call plug#end()
 
 " set encryption method
-set cm=blowfish2 
+set cm=blowfish2
 
 "softwrap
 set linebreak
@@ -44,35 +42,30 @@ else
 	colorscheme elflord
 endif
 
-syntax on
-set t_Co=256
-
 set showcmd           " show partial commands
-set numberwidth=4 		" move numbers to the right
 set mouse=a 					" enable mouse support
 set scrolloff=4 			" don't touch the edges
 
+set clipboard+=unnamed  " merge clipboard with sys
+set paste               " paste mode
+
 set backspace=indent,eol,start "enable backspace over anything
 
-set wildmode=longest,list,full 
-
-" always show status line
-set laststatus=2
+set wildmode=longest,list,full
 
 let g:pencil#wrapModeDefault = 'soft'   " default is 'hard'
 autocmd FileType text call pencil#init()
 
-" indenting 
+" indenting
 set tabstop=2
 set shiftwidth=2
 set autoindent
 
-"""""""""""""""""""""""""""""""""""""""
 " Searching
-"""""""""""""""""""""""""""""""""""""""""""
-set hlsearch		"highlight search results
-set incsearch		"search as charaters are typed
-set ignorecase smartcase "Case sensitive only if there are uppers
+set hlsearch		          "highlight search results
+set incsearch		          "search as charaters are typed
+set ignorecase smartcase  "Case sensitive only if there are uppers
+
 " turn off search highlighting by hitting return
 nnoremap <CR> :nohlsearch<cr>
 
@@ -92,6 +85,20 @@ autocmd BufReadPost *
 	\   exe "normal g`\"" |
 	\ endif
 
+
+" print the date and underline it
+nnoremap <F9>      o<C-R>=strftime("%a, %d %b %Y")<CR><Esc>yypVr-o
+inoremap <F9> <Esc>o<C-R>=strftime("%a, %d %b %Y")<CR><Esc>yypVr-o
+
+
+" in normal mode, hit enter and run the file
+autocmd BufNewFile,BufRead *.rb map <cr> :w\|:!clear; ./%<cr>
+
+autocmd BufNewFile,Bufread *c,*.rb,*.py,*.js,*.html,*.css set number
+
+" disable scrollbars in gvim
+set guioptions=
+
 " Disable detection of whitespace errors
 let g:airline#extensions#whitespace#enabled=0
 
@@ -102,36 +109,8 @@ let g:airline#extensions#whitespace#enabled=0
 " Y	file encoding[fileformat] (utf-8[unix])
 " Z	current position in the file
 let g:airline_section_b = ""
-let g:airline_section_y = ""
-
-" insert date and time and underline it
-nnoremap <F9> o<Esc>i=strftime("%a, %d %b %Y %H:%M:%S %z")<CR>yypVr-
-inoremap <F9> <C-R>=strftime("%a, %d %b %Y %H:%M:%S %z")<CR>
-
-"paste from system clipboard
-nmap <F10> o<Esc><CR>"*P
-
-" Set the title of the Terminal to the currently open file
-function! SetTerminalTitle()
-    let titleString = expand('%:t')
-    if len(titleString) > 0
-        let &titlestring = expand('%:t')
-        " this is the format iTerm2 expects when setting the window title
-        let args = "\033];".&titlestring."\007"
-        let cmd = 'silent !echo -e "'.args.'"'
-        execute cmd
-        redraw!
-    endif
-endfunction
-autocmd BufEnter * call SetTerminalTitle()
-
-" in normal mode, hit enter and run the file
-autocmd BufNewFile,BufRead *.rb map <cr> :w\|:!clear; ./%<cr>
-"autocmd BufNewFile,BufRead *.js map <cr> :w\|:!clear;./%<cr>
-
-autocmd BufNewFile,Bufread *c,*.rb,*.py,*.js,*.html,*.css set number
-
-" disable scrollbars in macvim
-set guioptions=
 
 let g:jedi#force_py_version = 3
+let g:jedi#popup_on_dot = 0
+let g:jedi#smart_auto_mappings = 0
+let g:jedi#show_call_signatures = 0

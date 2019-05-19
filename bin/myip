@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+# works on OSX
+ifconfig en0 | grep inet | grep -v inet6 | awk '{print $2}'

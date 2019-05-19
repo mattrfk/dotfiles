@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+if [ ! -d ./.git ]; then
+	git init
+	echo "git initialized"
+fi
+
+if [ ! -s .gitignore ]; then
+	touch .gitignore
+
+	echo .ds_store 	>> .gitignore
+	echo *.swp 			>> .gitignore
+	echo .log 			>> .gitignore
+
+	echo "added gitignore stub"
+fi

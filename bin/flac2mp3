@@ -1,0 +1,115 @@
+#!/usr/bin/env python3
+
+import sys
+from os.path import abspath, basename, normpath, join
+import os
+from subprocess import call
+
+rootdir = "./"
+outdir = "./"
+
+exclusions = ['.Trash']
+
+rootdir = abspath(rootdir)
+outdir = abspath(outdir)
+
+if len(sys.argv) == 2 and "-h" in sys.argv[1]:
+    print("usage: flac2mp3 indir outdir (if empty they are both pwd)")
+
+if(len(sys.argv) > 1):
+    rootdir = abspath(sys.argv[1])
+
+if(len(sys.argv) > 2):
+    outdir = abspath(sys.argv[2])
+
+
+def is_excl(p):
+    for e in exclusions:
+        if e in p:
+            return True
+
+def operate(op):
+    numFiles = 0
+    numDirs = 0
+    
+    for dirpath, dirnames, filenames in os.walk(rootdir):
+
+        if is_excl(dirpath): 
+            continue
+
+        numDirs += 1
+        
+        filenames = filter(lambda f: f.lower().endswith(".flac"), filenames)
+        for f in filenames:
+            op(dirpath, f)
+            numFiles += 1
+
+    return (numDirs, numFiles)
+
+
+dirs, files = operate( lambda p, f: print(join(p, f)))
+
+if(files == 0): 
+    quit()
+
+print("==========================")
+print("I found %d files in %d director%s" % 
+        (files, dirs, "ies" if dirs > 1 else "y"))
+print()
+print("I will put converted files within %s, preserving their relative paths" % outdir)
+answer = input("Shall I convert these %d files? [y/n]\n" % (files))
+if(answer.lower() != "y"):
+    print("OK bye.")
+    quit()
+
+print("OK, I'm doing it.")
+
+#ffmpeg -i *.flac -id3v2_version 3 -q:a 0 out.mp3
+flags = [ "-q:a", "0",
+          "-id3v2_version", "3"
+         ]
+
+# if there is a picture in the directory of [path]
+# then add it to the file
+def addPicture(path, outfile):
+    for f in os.listdir(path):
+        if f.endswith((".jpg", ".jpeg")) and not f.startswith("back"):
+            tmp = outfile + ".mp3"
+
+            call(["ffmpeg", 
+                "-y", # force overwrite
+                "-i", outfile,
+                "-i", join(path, f), # the picture
+                "-map", "0:0",
+                "-map", "1:0",
+                "-c", "copy",
+                "-id3v2_version", "3",
+                "-metadata:s:v", 'title="Album cover"',
+                "-metadata:s:v", 'comment="Cover (front)"',
+                 tmp])
+             
+            os.remove(outfile)
+            os.rename(tmp, outfile)
+            return 
+
+
+# the new file goes in a mirrored structure to the original's path, 
+# except the root is in the output dir
+def convert(path, f):
+    rel = os.path.relpath(path, rootdir)
+    out = os.path.join(outdir, rel)
+
+    if not os.path.exists(out):
+        os.makedirs(out)
+
+    infile = join(path, f)
+    outfile = join(out, f.rstrip(".flac") + ".mp3")
+
+    command = ["ffmpeg"] + ["-i", infile] + flags + [outfile]
+
+    call(command)
+
+    addPicture(path, outfile) 
+
+
+operate(convert)

@@ -1,0 +1,106 @@
+#!/usr/bin/env python3
+
+from requests   import get
+from bs4        import BeautifulSoup
+from sys        import argv
+from os         import popen
+
+base_url = "https://www.etymonline.com"
+search_url = "/search?q="
+
+
+def get_word():
+    if len(argv) < 2:
+        return input("Give me a word: ")
+    return argv[1]
+
+def get_soup(url):
+    page = get(url)
+    return BeautifulSoup(page.text, 'html.parser')
+
+def is_word_class(a):
+    """ return true if tag `a` has a class starting with `word` """
+
+    c = a.get('class')
+    if c and (c[0].startswith('word__name') or 
+              c[0].startswith('word--')):
+        return True
+    return False
+
+def wprint(s, width=False, indent=0):
+    """ print string `s` with word wrapping at column `width` """
+
+    if not width:
+        cols = int(popen('stty size', 'r').read().split()[1])
+        width = 40 if cols > 40 else cols
+
+    words = s.split()
+    lines = []
+    t = []
+    length = 0
+
+    ind = lambda t: [" " * (indent -1)] + t
+
+    for w in words:
+        length += len(w) + 1 # add one for the space
+        if length + indent > width: # start new line
+            lines.append(ind(t))
+            t = [w]
+            length = 0
+        else:
+            t.append(w)
+
+    if t: lines.append(ind(t)) # include last line
+
+    for line in lines:
+        print(' '.join(line))
+
+def get_index(words):
+    for i,w in enumerate(words):
+        print(f"{i+1:>2}) {w.text}")
+    
+    sel = input(f"Choose a word ({1}-{len(words)}): ")
+    index = int(sel) - 1
+    if index < 0 or index > len(words) - 1:
+        print("index out of range")
+        return get_index(words)
+    else:
+        return index
+
+# ask for a word or get it from command line argument 
+word = get_word()
+
+# send request to etymonline and get list of search results
+try:
+    soup = get_soup(base_url + search_url + word)
+except:
+    print("Are you connected to the internet?")
+    exit()
+
+words = [a for a in soup('a') if is_word_class(a)]
+
+# display results and ask which one to define
+index = 1 #get_index(words)
+
+# get definition page for selected word
+link = base_url + words[index].get('href')
+soup = get_soup(link)
+
+# get all text that is part of the definition
+text = [d for d in soup('div') if is_word_class(d)][0]
+
+title = text.find('h1').get_text()
+print()
+print(title)
+print(len(title) * '=')
+
+for p in text('p'):
+    if len(p.get_text()) < 1: continue
+    wprint(p.get_text())
+    print()
+
+for p in text('blockquote'):
+    wprint(p.get_text(), indent=3)
+    print()
+
+print(link)

@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+# append system clipboard to file, then open it in vim
+
+if [ -z "$1" ]; then
+	echo "you need to specify a filename"
+else
+	if [ -s $1 ]; then
+		echo "not empty"
+		printf "\n\n" >> $1
+	fi
+	pbpaste >> $1		
+	vim $1
+fi

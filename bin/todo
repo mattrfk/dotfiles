@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+f=~/Dropbox/todo.txt
+
+if [ -z "$1" ]; then
+	vim $f
+else
+	echo \- $@ >> $f
+fi
