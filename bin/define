@@ -55,7 +55,12 @@ def wprint(s, width=False, indent=0):
     for line in lines:
         print(' '.join(line))
 
-def get_index(words):
+def get_index(words, word):
+
+    for i,w in enumerate(words):
+        if word in w.text:
+            return i
+
     for i,w in enumerate(words):
         print(f"{i+1:>2}) {w.text}")
     
@@ -80,7 +85,7 @@ except:
 words = [a for a in soup('a') if is_word_class(a)]
 
 # display results and ask which one to define
-index = 1 #get_index(words)
+index = get_index(words, word)
 
 # get definition page for selected word
 link = base_url + words[index].get('href')

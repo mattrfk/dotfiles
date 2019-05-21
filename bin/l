@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-f=~/Dropbox/words/log.txt
+f=~/Dropbox/words/journal/log.txt
 
 if [ -z "$1" ]; then
 	vim $f
