@@ -88,13 +88,14 @@ autocmd BufReadPost *
 
 " print the date and underline it
 nnoremap <F9>      o<C-R>=strftime("%a, %d %b %Y")<CR><Esc>yypVr-o
-inoremap <F9> <Esc>o<C-R>=strftime("%a, %d %b %Y")<CR><Esc>yypVr-o
+" inoremap <F9> <Esc>o<C-R>=strftime("%a, %d %b %Y")<CR><Esc>yypVr-o
 
 
 " in normal mode, hit enter and run the file
 autocmd BufNewFile,BufRead *.rb map <cr> :w\|:!clear; ./%<cr>
 
 autocmd BufNewFile,Bufread *c,*.rb,*.py,*.js,*.html,*.css set number
+
 
 " disable scrollbars in gvim
 set guioptions=

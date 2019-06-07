@@ -2,7 +2,7 @@
 
 # for making notes
 
-f=~/Dropbox/words/notes.txt
+f=~/Dropbox/words/notes/notes.txt
 
 if [ -z "$1" ]; then
 	vim $f

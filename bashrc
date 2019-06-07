@@ -14,3 +14,4 @@ export HISTTIMEFORMAT="%d/%m/%y %T "
 export PS1="\u\$ "
 
 export PATH="$PATH:$HOME/dotfiles/bin"
+

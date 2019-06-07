@@ -8,7 +8,6 @@ from os         import popen
 base_url = "https://www.etymonline.com"
 search_url = "/search?q="
 
-
 def get_word():
     if len(argv) < 2:
         return input("Give me a word: ")
@@ -28,7 +27,8 @@ def is_word_class(a):
     return False
 
 def wprint(s, width=False, indent=0):
-    """ print string `s` with word wrapping at column `width` """
+    """ print string `s`, wrapped, by word, at column `width`
+        and indented `indent` spaces"""
 
     if not width:
         cols = int(popen('stty size', 'r').read().split()[1])
@@ -44,13 +44,13 @@ def wprint(s, width=False, indent=0):
     for w in words:
         length += len(w) + 1 # add one for the space
         if length + indent > width: # start new line
-            lines.append(ind(t))
+            lines.append(ind(t) if indent else t)
             t = [w]
             length = 0
         else:
             t.append(w)
 
-    if t: lines.append(ind(t)) # include last line
+    if t: lines.append(ind(t) if indent else t) # include last line
 
     for line in lines:
         print(' '.join(line))
@@ -64,7 +64,12 @@ def get_index(words, word):
     for i,w in enumerate(words):
         print(f"{i+1:>2}) {w.text}")
     
-    sel = input(f"Choose a word ({1}-{len(words)}): ")
+    try:
+        sel = input(f"Choose a word ({1}-{len(words)}): ")
+    except KeyboardInterrupt: # e.g. C-c
+        print()
+        exit()
+
     index = int(sel) - 1
     if index < 0 or index > len(words) - 1:
         print("index out of range")
@@ -83,6 +88,10 @@ except:
     exit()
 
 words = [a for a in soup('a') if is_word_class(a)]
+
+if len(words) < 1:
+    print("no words found for", word)
+    exit()
 
 # display results and ask which one to define
 index = get_index(words, word)
