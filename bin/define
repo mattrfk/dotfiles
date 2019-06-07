@@ -3,10 +3,42 @@
 from requests   import get
 from bs4        import BeautifulSoup
 from sys        import argv
-from os         import popen
+from os         import popen, path
 
 base_url = "https://www.etymonline.com"
 search_url = "/search?q="
+cache = path.join(path.expanduser("~"), ".etymcache")
+
+def check_cache(word):
+    if not path.exists(cache): return False
+
+    definition = ""
+    with open(cache) as f:
+        for l in f:
+            # found the word, I don't want the first line
+            # because the first line is just the word
+            # so I write something else instead to trigger
+            # the next if statement
+            if l.strip() == word:
+                definition += "cached definition:\n"
+            elif definition:
+                if "------" in l: break
+                definition += l
+                
+    return definition
+
+def put_cache(word, definition):
+    """ cache the definition. Return False if the 
+        cache file was not updated """ 
+    if check_cache(word): return False
+    with open(cache, "a") as f:
+        #TODO: write date here? 
+        f.write(word + '\n')
+        f.write(definition)
+        f.write('-' * 40 + '\n')
+        return True
+
+    return False # shouldn't get here.
 
 def get_word():
     if len(argv) < 2:
@@ -29,6 +61,8 @@ def is_word_class(a):
 def wprint(s, width=False, indent=0):
     """ print string `s`, wrapped, by word, at column `width`
         and indented `indent` spaces"""
+
+    text = ""
 
     if not width:
         cols = int(popen('stty size', 'r').read().split()[1])
@@ -53,7 +87,10 @@ def wprint(s, width=False, indent=0):
     if t: lines.append(ind(t) if indent else t) # include last line
 
     for line in lines:
-        print(' '.join(line))
+        text += ' '.join(line)
+        text += '\n'
+
+    return text
 
 def get_index(words, word):
 
@@ -80,6 +117,11 @@ def get_index(words, word):
 # ask for a word or get it from command line argument 
 word = get_word()
 
+d = check_cache(word)
+if d:
+    print(d)
+    exit()
+
 # send request to etymonline and get list of search results
 try:
     soup = get_soup(base_url + search_url + word)
@@ -100,21 +142,27 @@ index = get_index(words, word)
 link = base_url + words[index].get('href')
 soup = get_soup(link)
 
-# get all text that is part of the definition
-text = [d for d in soup('div') if is_word_class(d)][0]
+content = [d for d in soup('div') if is_word_class(d)][0]
 
-title = text.find('h1').get_text()
-print()
-print(title)
-print(len(title) * '=')
+text = content.find('h1').get_text()
+text += '\n'
+text += len(text) * '='
+text += '\n'
 
-for p in text('p'):
+for p in content('p'):
     if len(p.get_text()) < 1: continue
-    wprint(p.get_text())
-    print()
+    text += wprint(p.get_text())
+    text += '\n'
 
-for p in text('blockquote'):
-    wprint(p.get_text(), indent=3)
-    print()
+for p in content('blockquote'):
+    text += wprint(p.get_text(), indent=3)
+    text += '\n'
 
-print(link)
+text += '\n'
+text += link
+text += '\n'
+
+print()
+print(text)
+
+if put_cache(word, text): print("chached", word)
