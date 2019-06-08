@@ -15,11 +15,10 @@ def check_cache(word):
     definition = ""
     with open(cache) as f:
         for l in f:
-            # found the word, I don't want the first line
-            # because the first line is just the word
-            # so I write something else instead to trigger
-            # the next if statement
             if l.strip() == word:
+                # Found the word I'm looking for 
+                # (first occurrence of the word is just an index)
+                # set definition variable to start reading next lines 
                 definition += "cached definition:\n"
             elif definition:
                 if "------" in l: break
@@ -40,10 +39,26 @@ def put_cache(word, definition):
 
     return False # shouldn't get here.
 
+def list_hist():
+    if not path.exists(cache): exit()
+
+    prev = ""
+    with open(cache) as f:
+        for l in f:
+            if l.startswith("=="):
+                print(prev)
+            prev = l
+    exit()
+
 def get_word():
     if len(argv) < 2:
         return input("Give me a word: ")
-    return argv[1]
+
+    for a in argv[1:]:
+        if a.startswith("-"):
+            if a.startswith("-h"): list_hist()
+    
+    return argv[-1] 
 
 def get_soup(url):
     page = get(url)
@@ -146,7 +161,7 @@ content = [d for d in soup('div') if is_word_class(d)][0]
 
 text = content.find('h1').get_text()
 text += '\n'
-text += len(text) * '='
+text += (len(text) - 1) * '=' # -1 for newline 
 text += '\n'
 
 for p in content('p'):
@@ -165,4 +180,5 @@ text += '\n'
 print()
 print(text)
 
-if put_cache(word, text): print("chached", word)
+if put_cache(word, text): 
+    print("chached", word)
