@@ -5,6 +5,8 @@ alias words='cd ~/Dropbox/words'
 alias code='cd ~/Documents/code'
 alias webstub='cp ~/dotfiles/webstub/* ./'
 
+alias ts='date +%s'
+
 export LSCOLORS="gxBxhxDxfxhxhxhxhxcxcx"
 export GREP_OPTIONS="--color"
 

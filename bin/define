@@ -7,19 +7,22 @@ from os         import popen, path
 
 base_url = "https://www.etymonline.com"
 search_url = "/search?q="
-cache = path.join(path.expanduser("~"), ".etymcache")
+
+cachepath = "~/.etymcache"
+cachepath = path.expanduser(cachepath)
 
 def check_cache(word):
-    if not path.exists(cache): return False
+    if not path.exists(cachepath): return False
 
     definition = ""
-    with open(cache) as f:
+    with open(cachepath) as f:
         for l in f:
-            if l.strip() == word:
+            if l.split(' ')[0].lower() == word.lower():
                 # Found the word I'm looking for 
                 # (first occurrence of the word is just an index)
                 # set definition variable to start reading next lines 
-                definition += "cached definition:\n"
+                definition += "Found cached definition:\n"
+                definition += l
             elif definition:
                 if "------" in l: break
                 definition += l
@@ -30,9 +33,8 @@ def put_cache(word, definition):
     """ cache the definition. Return False if the 
         cache file was not updated """ 
     if check_cache(word): return False
-    with open(cache, "a") as f:
+    with open(cachepath, "a") as f:
         #TODO: write date here? 
-        f.write(word + '\n')
         f.write(definition)
         f.write('-' * 40 + '\n')
         return True
@@ -40,13 +42,13 @@ def put_cache(word, definition):
     return False # shouldn't get here.
 
 def list_hist():
-    if not path.exists(cache): exit()
+    if not path.exists(cachepath): exit()
 
     prev = ""
-    with open(cache) as f:
+    with open(cachepath) as f:
         for l in f:
             if l.startswith("=="):
-                print(prev)
+                print(prev.strip())
             prev = l
     exit()
 
@@ -181,4 +183,4 @@ print()
 print(text)
 
 if put_cache(word, text): 
-    print("chached", word)
+    print("cached", word)

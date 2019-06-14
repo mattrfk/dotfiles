@@ -58,6 +58,7 @@ autocmd FileType text call pencil#init()
 
 " indenting
 set tabstop=2
+set expandtab "convert tab character to spaces
 set shiftwidth=2
 set autoindent
 

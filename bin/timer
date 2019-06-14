@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+
+counter=$1
+
+size=$(stty size)
+set -- $size
+height=$1
+width=$2
+
+if [[ ! $counter =~ ^[0-9]+$ ]]; then
+	echo "I need a number to count down from"
+	exit
+fi
+
+function marginprint() {
+	echo 
+	echo 	"-----------" 
+	echo  "| " $1
+	echo	"-----------" 
+}
+
+while [ $counter -gt 0 ]
+do
+	clear
+	marginprint $counter
+	sleep 1
+	((counter--))
+done
+
+clear
+
+marginprint "DING!!"
