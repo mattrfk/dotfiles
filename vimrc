@@ -47,7 +47,7 @@ set mouse=a 					" enable mouse support
 set scrolloff=4 			" don't touch the edges
 
 set clipboard+=unnamed  " merge clipboard with sys
-set paste               " paste mode
+"set paste               " paste mode
 
 set backspace=indent,eol,start "enable backspace over anything
 
@@ -89,8 +89,7 @@ autocmd BufReadPost *
 
 " print the date and underline it
 nnoremap <F9>      o<C-R>=strftime("%a, %d %b %Y")<CR><Esc>yypVr-o
-" inoremap <F9> <Esc>o<C-R>=strftime("%a, %d %b %Y")<CR><Esc>yypVr-o
-
+inoremap <F9> <Esc>o<C-R>=strftime("%a, %d %b %Y")<CR><Esc>yypVr-o
 
 " in normal mode, hit enter and run the file
 autocmd BufNewFile,BufRead *.rb map <cr> :w\|:!clear; ./%<cr>
