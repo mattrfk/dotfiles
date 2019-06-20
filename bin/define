@@ -4,12 +4,15 @@ from requests   import get
 from bs4        import BeautifulSoup
 from sys        import argv
 from os         import popen, path
+from textwrap   import fill
 
 base_url = "https://www.etymonline.com"
 search_url = "/search?q="
 
 cachepath = "~/.etymcache"
 cachepath = path.expanduser(cachepath)
+
+cache_enaabled = False
 
 def check_cache(word):
     if not path.exists(cachepath): return False
@@ -76,39 +79,20 @@ def is_word_class(a):
     return False
 
 def wprint(s, width=False, indent=0):
-    """ print string `s`, wrapped, by word, at column `width`
-        and indented `indent` spaces"""
-
-    text = ""
-
+    maxwidth = 50
     if not width:
         cols = int(popen('stty size', 'r').read().split()[1])
-        width = 40 if cols > 40 else cols
+        width = maxwidth if cols > maxwidth else cols
 
-    words = s.split()
-    lines = []
-    t = []
-    length = 0
+    ind = ' ' * indent
 
-    ind = lambda t: [" " * (indent -1)] + t
+    text = fill(s, 
+                width=width, 
+                initial_indent=ind, 
+                subsequent_indent=ind)
 
-    for w in words:
-        length += len(w) + 1 # add one for the space
-        if length + indent > width: # start new line
-            lines.append(ind(t) if indent else t)
-            t = [w]
-            length = 0
-        else:
-            t.append(w)
-
-    if t: lines.append(ind(t) if indent else t) # include last line
-
-    for line in lines:
-        text += ' '.join(line)
-        text += '\n'
-
-    return text
-
+    return text + '\n'
+    
 def get_index(words, word):
 
     for i,w in enumerate(words):
@@ -182,5 +166,5 @@ text += '\n'
 print()
 print(text)
 
-if put_cache(word, text): 
+if cache_enaabled and put_cache(word, text): 
     print("cached", word)
