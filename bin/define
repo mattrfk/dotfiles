@@ -12,21 +12,21 @@ search_url = "/search?q="
 cachepath = "~/.etymcache"
 cachepath = path.expanduser(cachepath)
 
-cache_enaabled = False
+cache_enaabled = True
 
 def check_cache(word):
     if not path.exists(cachepath): return False
 
     definition = ""
+    found = False
     with open(cachepath) as f:
         for l in f:
-            if l.split(' ')[0].lower() == word.lower():
-                # Found the word I'm looking for 
-                # (first occurrence of the word is just an index)
-                # set definition variable to start reading next lines 
-                definition += "Found cached definition:\n"
+
+            if not found and l.split(' ')[0].lower() == word.lower():
+                definition += "Found a cached definition:\n"
+                found = True
                 definition += l
-            elif definition:
+            elif found:
                 if "------" in l: break
                 definition += l
                 
@@ -85,13 +85,12 @@ def wprint(s, width=False, indent=0):
         width = maxwidth if cols > maxwidth else cols
 
     ind = ' ' * indent
-
     text = fill(s, 
                 width=width, 
                 initial_indent=ind, 
                 subsequent_indent=ind)
 
-    return text + '\n'
+    return text
     
 def get_index(words, word):
 
@@ -143,23 +142,28 @@ index = get_index(words, word)
 link = base_url + words[index].get('href')
 soup = get_soup(link)
 
-content = [d for d in soup('div') if is_word_class(d)][0]
+definitions = [d for d in soup('div') if is_word_class(d)]
 
-text = content.find('h1').get_text()
-text += '\n'
-text += (len(text) - 1) * '=' # -1 for newline 
-text += '\n'
+text = ""
+for content in definitions:
 
-for p in content('p'):
-    if len(p.get_text()) < 1: continue
-    text += wprint(p.get_text())
+    title = [p for p in content.find_all(['h1', 'p']) 
+            if is_word_class(p)][0].get_text()
+
+    text += title
+    text += '\n'
+    text += (len(title) - 1) * '=' # -1 for newline 
     text += '\n'
 
-for p in content('blockquote'):
-    text += wprint(p.get_text(), indent=3)
-    text += '\n'
+    for p in content(['p', 'blockquote']):
+        if len(p.get_text()) < 1: continue
+        if is_word_class(p): continue
 
-text += '\n'
+        indent = 3 if p.name == 'blockquote' else 0
+
+        text += wprint(p.get_text(), indent=indent)
+        text += '\n' * 2
+
 text += link
 text += '\n'
 
